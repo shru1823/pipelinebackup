@@ -1,0 +1,36 @@
+{
+	"name": "RFS_CONTAINER_FILE_INPUT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RFS_BLOB_ETL",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"xml_filename": {
+				"type": "string"
+			},
+			"containername": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "Others"
+		},
+		"annotations": [],
+		"type": "Xml",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().xml_filename",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().containername",
+					"type": "Expression"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

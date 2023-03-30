@@ -1,0 +1,29 @@
+{
+	"name": "RFS_SALES_CONTAINER",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RFS_BLOB_ETL",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"container": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "Sales Dataset"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": {
+					"value": "@dataset().container",
+					"type": "Expression"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

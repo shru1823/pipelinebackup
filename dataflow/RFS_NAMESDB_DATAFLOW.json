@@ -1,0 +1,87 @@
+{
+	"name": "RFS_NAMESDB_DATAFLOW",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "RFS_CONTAINER_FILE_INPUT",
+						"type": "DatasetReference"
+					},
+					"name": "XMLFileSource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference"
+					},
+					"name": "WriteToDB"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FlattenTask"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          NamesDb as ({@version} as double, Language as ({@code} as string, {@name} as string, {@parent} as string, ProductName as (AlternativeName as string, CODName as string, CSOGenericName as string, CSOName as string, CSOSizeName as string, DTName as string, LongName as string, ProductCode as integer, SR_Name as string, SR_Question as string, ShortMonitorName as string, ShortName as string, SummaryMonitorName as string)[])[])",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     validationMode: 'none',",
+				"     namespaces: true) ~> XMLFileSource",
+				"XMLFileSource foldDown(unroll(NamesDb.Language.ProductName),",
+				"     mapColumn(",
+				"          {@version} = NamesDb.{@version},",
+				"          {@code} = NamesDb.Language.{@code},",
+				"          {@name} = NamesDb.Language.{@name},",
+				"          {@parent} = NamesDb.Language.{@parent},",
+				"          AlternativeName = NamesDb.Language.ProductName.AlternativeName,",
+				"          CODName = NamesDb.Language.ProductName.CODName,",
+				"          CSOGenericName = NamesDb.Language.ProductName.CSOGenericName,",
+				"          CSOName = NamesDb.Language.ProductName.CSOName,",
+				"          CSOSizeName = NamesDb.Language.ProductName.CSOSizeName,",
+				"          DTName = NamesDb.Language.ProductName.DTName,",
+				"          LongName = NamesDb.Language.ProductName.LongName,",
+				"          ProductCode = NamesDb.Language.ProductName.ProductCode,",
+				"          SR_Name = NamesDb.Language.ProductName.SR_Name,",
+				"          SR_Question = NamesDb.Language.ProductName.SR_Question,",
+				"          ShortMonitorName = NamesDb.Language.ProductName.ShortMonitorName,",
+				"          ShortName = NamesDb.Language.ProductName.ShortName,",
+				"          SummaryMonitorName = NamesDb.Language.ProductName.SummaryMonitorName",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> FlattenTask",
+				"FlattenTask sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     recreate:true,",
+				"     format: 'table',",
+				"     mapColumn(",
+				"          Alternative_name = AlternativeName,",
+				"          COD_Name = CODName,",
+				"          COS_Generic_Name = CSOGenericName,",
+				"          CSO_Name = CSOName,",
+				"          CSO_Size_Name = CSOSizeName,",
+				"          DT_Name = DTName,",
+				"          Long_Name = LongName,",
+				"          Product_Code = ProductCode,",
+				"          SR_Name,",
+				"          SR_Question,",
+				"          Short_Monitor_Name = ShortMonitorName,",
+				"          Short_Name = ShortName,",
+				"          Summary_Monitor_Name = SummaryMonitorName,",
+				"          Parent = {@parent}",
+				"     )) ~> WriteToDB"
+			]
+		}
+	}
+}

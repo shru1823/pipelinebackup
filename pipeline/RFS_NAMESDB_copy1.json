@@ -1,0 +1,204 @@
+{
+	"name": "RFS_NAMESDB_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "checknamedbexist",
+				"description": "It will first check the namedb file is exist in namedb container or not.\nIf name db file exist, it will process\n if not then it will not process ahead.",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "RFS_CONTAINER_FILE_INPUT",
+						"type": "DatasetReference",
+						"parameters": {
+							"xml_filename": {
+								"value": "@variables('namedbfilename')",
+								"type": "Expression"
+							},
+							"containername": {
+								"value": "@variables('namedbcontainer')",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"exists"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "Ifnamedbexist",
+				"description": "This activity has multiple inner activities.\nIt checks condition of namedb file exist or not. \nIf condition is true then inner activities will run.\nIf condition is false then false inner activities run\nas of now no activity for false condition. ",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "checknamedbexist",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@activity('checknamedbexist').output.exists",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Run NamesDB Dataflow",
+							"description": "This task will execute NAMESDB_DATAFLOW.\nThis dataflow has mapping of namedb XML to namedb staging table.\nSo it will directly transfer data in name db staging table from namedb XML",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "RFS_NAMESDB_DATAFLOW",
+									"type": "DataFlowReference",
+									"datasetParameters": {
+										"XMLFileSource": {
+											"xml_filename": {
+												"value": "@variables('namedbfilename')",
+												"type": "Expression"
+											},
+											"containername": {
+												"value": "@variables('namedbcontainer')",
+												"type": "Expression"
+											}
+										},
+										"WriteToDB": {
+											"dbName": {
+												"value": "@variables('dbName')",
+												"type": "Expression"
+											},
+											"tableName": "TEMP_NAMES_DB"
+										}
+									}
+								},
+								"integrationRuntime": {
+									"referenceName": "RFSAzure-IR",
+									"type": "IntegrationRuntimeReference"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "Exec Stored Procedure",
+							"description": "Execute [SP_NAMES_DB] stored procedure.\nThis stored procedure use to send data from staging table to main table.",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Run NamesDB Dataflow",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[SP_NAMES_DB]"
+							},
+							"linkedServiceName": {
+								"referenceName": "BIIntegrationSQL_AzureIR",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"DBName": {
+										"value": "@variables('dbName')",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "DeleteContainerFiles",
+							"description": "After successful execution of previous task namedb file gets delete from namedb container.",
+							"type": "Delete",
+							"dependsOn": [
+								{
+									"activity": "Exec Stored Procedure",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "RFS_SALES_CONTAINER",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": {
+											"value": "@variables('namedbcontainer')",
+											"type": "Expression"
+										}
+									}
+								},
+								"enableLogging": false,
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"dbName": {
+				"type": "String",
+				"defaultValue": "RFS_COGS_ETL_Test"
+			},
+			"namedbfilename": {
+				"type": "String",
+				"defaultValue": "names-db.xml"
+			},
+			"namedbcontainer": {
+				"type": "String",
+				"defaultValue": "namedbtest"
+			}
+		},
+		"folder": {
+			"name": "MASTER_TEST_PIPELINES"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-02T06:33:23Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

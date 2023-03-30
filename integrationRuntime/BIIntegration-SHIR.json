@@ -1,0 +1,7 @@
+{
+	"name": "BIIntegration-SHIR",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "BIIntegration Server Connection SHIR"
+	}
+}

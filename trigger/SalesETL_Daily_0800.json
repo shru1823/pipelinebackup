@@ -1,0 +1,17 @@
+{
+	"name": "SalesETL_Daily_0800",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2023-01-01T08:00:00",
+				"timeZone": "Arab Standard Time"
+			}
+		}
+	}
+}

@@ -1,0 +1,90 @@
+{
+	"name": "RFS_SALES_DELETE_TEMP_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "DeleteTemp",
+				"type": "Delete",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "RFS_SALES_CONTAINER",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.temp1",
+								"type": "Expression"
+							}
+						}
+					},
+					"enableLogging": false,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "DeleteTemp2",
+				"type": "Delete",
+				"dependsOn": [
+					{
+						"activity": "DeleteTemp",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "RFS_SALES_CONTAINER",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.temp2",
+								"type": "Expression"
+							}
+						}
+					},
+					"enableLogging": false,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
+			}
+		],
+		"parameters": {
+			"temp1": {
+				"type": "string"
+			},
+			"temp2": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "SALES_TEST_CHILD_PIPELINES"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-02T06:17:34Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,91 @@
+{
+	"name": "RFS_COGS_EXTRACTZIP_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "ExtractZipFiles",
+				"description": "This activity performs extraction of ZIP.\nAfter extraction generated daily sales, food paper cost and inventory cost control csv save in one folder.\nFolder will autogenerate, and name of folder is same as processed zip file name.",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings",
+							"compressionProperties": {
+								"type": "ZipDeflateReadSettings"
+							}
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings",
+							"copyBehavior": "PreserveHierarchy"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "RFS_COGS_SOURCE_FILE",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.source_container",
+								"type": "Expression"
+							},
+							"filename": {
+								"value": "@pipeline().parameters.source_file",
+								"type": "Expression"
+							},
+							"folder": "@string('')"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "RFS_COGS_CONTAINER",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.temp_container",
+								"type": "Expression"
+							},
+							"folder": "@string('')"
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"source_container": {
+				"type": "string"
+			},
+			"temp_container": {
+				"type": "string"
+			},
+			"source_file": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "COGS_TEST_CHILD_PIPELINES"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-02T06:36:30Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

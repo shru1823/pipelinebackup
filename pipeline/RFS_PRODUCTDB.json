@@ -1,0 +1,298 @@
+{
+	"name": "RFS_PRODUCTDB",
+	"properties": {
+		"activities": [
+			{
+				"name": "GetProductDBFiles",
+				"description": "It will first check the productdb file is exist in productdb container or not.\nIf productdb file exist, it will process ahed with true condition.\n if not then it will not process ahead but with false condition.",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "RFS_CONTAINER_FILE_INPUT",
+						"type": "DatasetReference",
+						"parameters": {
+							"xml_filename": {
+								"value": "@variables('productdbfilename')",
+								"type": "Expression"
+							},
+							"containername": {
+								"value": "@variables('productdbcontainer')",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"exists"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "CheckifProductDBExist",
+				"description": "This activity has multiple inner activities.\nIt checks condition of productdb file exist or not. \nIf condition is true then inner activities will run.\nIf condition is false then false inner activities run\nas of now no activity for false condition. ",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "GetProductDBFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@activity('GetProductDBFiles').output.exists",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Run ProductDB Dataflow",
+							"description": "This task will execute PRODUCTDB_DATAFLOW.\nThis dataflow has mapping of productdb XML to all productdb staging tables.\nSo it will directly transfer data in all productdb staging table from productdb XML",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "RFS_PRODUCTDB_DATAFLOW",
+									"type": "DataFlowReference",
+									"datasetParameters": {
+										"XMLFileSource": {
+											"filename": {
+												"value": "@variables('productdbfilename')",
+												"type": "Expression"
+											},
+											"containername": {
+												"value": "@variables('productdbcontainer')",
+												"type": "Expression"
+											}
+										},
+										"WriteProductDB": {
+											"dbName": {
+												"value": "@variables('dbName')",
+												"type": "Expression"
+											},
+											"tableName": "TEMP_PRODUCT_EXTRAS"
+										},
+										"WriteProductCanAdds": {
+											"dbName": {
+												"value": "@variables('dbName')",
+												"type": "Expression"
+											},
+											"tableName": "TEMP_PRODUCT_CANADDS"
+										},
+										"WriteProductCategories": {
+											"dbName": {
+												"value": "@variables('dbName')",
+												"type": "Expression"
+											},
+											"tableName": "TEMP_PRODUCT_CATEGORIES"
+										},
+										"WriteCategoryMenus": {
+											"dbName": {
+												"value": "@variables('dbName')",
+												"type": "Expression"
+											},
+											"tableName": "TEMP_PRODUCT_CATEGORYMENU"
+										},
+										"WriteProductChoices": {
+											"dbName": {
+												"value": "@variables('dbName')",
+												"type": "Expression"
+											},
+											"tableName": "TEMP_PRODUCT_CHOICE"
+										},
+										"WriteProductComments": {
+											"dbName": {
+												"value": "@variables('dbName')",
+												"type": "Expression"
+											},
+											"tableName": "TEMP_PRODUCT_COMMENTS"
+										},
+										"WriteProductComposition": {
+											"dbName": {
+												"value": "@variables('dbName')",
+												"type": "Expression"
+											},
+											"tableName": "TEMP_PRODUCT_COMPOSITION"
+										},
+										"WriteProductCustomParameters": {
+											"dbName": {
+												"value": "@variables('dbName')",
+												"type": "Expression"
+											},
+											"tableName": "TEMP_PRODUCT_PARAMETER"
+										},
+										"WriteProductDistribution": {
+											"dbName": {
+												"value": "@variables('dbName')",
+												"type": "Expression"
+											},
+											"tableName": "TEMP_PRODUCT_DISTRIBUTION"
+										},
+										"WriteProductPriceList": {
+											"dbName": {
+												"value": "@variables('dbName')",
+												"type": "Expression"
+											},
+											"tableName": "TEMP_PRODUCT_PRICELIST"
+										},
+										"WriteProductProductionKVSRoute": {
+											"dbName": {
+												"value": "@variables('dbName')",
+												"type": "Expression"
+											},
+											"tableName": "TEMP_PRODUCT_PRODUCTION"
+										},
+										"WriteProductSizeSelection": {
+											"dbName": {
+												"value": "@variables('dbName')",
+												"type": "Expression"
+											},
+											"tableName": "TEMP_PRODUCT_SIZESELECTION"
+										},
+										"WriteSubstitutionList": {
+											"dbName": {
+												"value": "@variables('dbName')",
+												"type": "Expression"
+											},
+											"tableName": "TEMP_PRODUCT_SUBSTITUTION"
+										},
+										"WriteProduct": {
+											"dbName": {
+												"value": "@variables('dbName')",
+												"type": "Expression"
+											},
+											"tableName": "TEMP_PRODUCT_WRITEPRODUCT"
+										}
+									}
+								},
+								"integrationRuntime": {
+									"referenceName": "RFSAzure-IR",
+									"type": "IntegrationRuntimeReference"
+								},
+								"traceLevel": "None",
+								"continueOnError": true,
+								"cacheSinks": {
+									"firstRowOnly": true
+								}
+							}
+						},
+						{
+							"name": "RFM Product Tables",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Run ProductDB Dataflow",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[SP_RFM_PRODUCT_TABLE]"
+							},
+							"linkedServiceName": {
+								"referenceName": "BIIntegrationSQL_AzureIR",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"DBName": {
+										"value": "@variables('dbName')",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "DeleteNamesdbContainer",
+							"description": "After successful execution of previous task productdb file gets delete from productdb container.",
+							"type": "Delete",
+							"dependsOn": [
+								{
+									"activity": "RFM Product Tables",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "RFS_SALES_CONTAINER",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": {
+											"value": "@variables('productdbcontainer')",
+											"type": "Expression"
+										}
+									}
+								},
+								"enableLogging": false,
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"dbName": {
+				"type": "String",
+				"defaultValue": "RFS_COGS_ETL"
+			},
+			"productdbfilename": {
+				"type": "String",
+				"defaultValue": "product-db.xml"
+			},
+			"productdbcontainer": {
+				"type": "String",
+				"defaultValue": "productdb"
+			}
+		},
+		"folder": {
+			"name": "Master Pipelines"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-19T07:34:46Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

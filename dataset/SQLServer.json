@@ -1,0 +1,250 @@
+{
+	"name": "SQLServer",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BIIntegration_SQL",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "StoreId",
+				"type": "varchar"
+			},
+			{
+				"name": "BusinessDate",
+				"type": "date"
+			},
+			{
+				"name": "ItemId",
+				"type": "varchar"
+			},
+			{
+				"name": "ItemName",
+				"type": "varchar"
+			},
+			{
+				"name": "RecipeContainedFlag",
+				"type": "varchar"
+			},
+			{
+				"name": "GroupName",
+				"type": "varchar"
+			},
+			{
+				"name": "UOM",
+				"type": "varchar"
+			},
+			{
+				"name": "OpeningStock",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "OpeningStockAmount",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "DeliveryCount",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "DeliveryAmount",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "TransferInCount",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "TransferInAmt",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "TransferOutCount",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "TransferOutAmt",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "TransferAmount",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "RProRWasQTY",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "RProRWasAmt",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "UsageSaleQTY",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "UsageSaleAmt",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "MDSSaleQTY",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "MDSSaleAmt",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "ManagerMealQTY",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "ManagerMealAmt",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "Employee_MealQTY",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "EmployeeMealAmt",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "PromoUsageQTY",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "PromoUsageAmt",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "FullWasteQTY",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "FullWasteAmt",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "ExpStock",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "InventoryCountQTY",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "InventoryCountAmt",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "UsagePreQTY",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "UsagePreAmt",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "UsagePostQTY",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "UsagePostAmt",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "PricePerCase",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "UnitsPerCase",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "unitPrice",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 10
+			},
+			{
+				"name": "ModifedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "INVENTORYCONTROL_backup"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

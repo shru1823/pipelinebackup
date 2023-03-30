@@ -1,0 +1,569 @@
+{
+	"name": "RFS_SALES",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get List of Files",
+				"description": "Using This activity, you will get total count of zip files are present at source location.\nTotal count will be output result of this activity & input for foreach activity.\n\n",
+				"type": "GetMetadata",
+				"dependsOn": [
+					{
+						"activity": "Truncate_Sales_Temp_Tables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "RFS_SALES_SOURCE",
+						"type": "DatasetReference",
+						"parameters": {
+							"container_name": {
+								"value": "@variables('source_container')",
+								"type": "Expression"
+							},
+							"filename": "*.zip"
+						}
+					},
+					"fieldList": [
+						"itemName",
+						"itemType",
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "BinaryReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ProcessEachFile",
+				"description": "This activity has multiple inner activity inside.\nNumber of Runs of this activity equal to total count of input files.\nIt will process each file parallelly. ",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get List of Files",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get List of Files').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"batchCount": 15,
+					"activities": [
+						{
+							"name": "SetFileName",
+							"description": "This activity will set file name variable value as a processed item name.\n",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "filename",
+								"value": {
+									"value": "@item().name",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "CopyPOSSTLDtoStaging",
+							"description": "This activity performs copy task.\nIt copies all files to stldtemp2 location which includes STLD in their name. ",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "ExtractZipFiles",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "BinarySource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"wildcardFolderPath": {
+											"value": "@concat(item().name,'*')",
+											"type": "Expression"
+										},
+										"wildcardFileName": "*STLD*",
+										"deleteFilesAfterCompletion": false
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings"
+									}
+								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings",
+										"copyBehavior": "FlattenHierarchy"
+									}
+								},
+								"enableStaging": false,
+								"dataIntegrationUnits": 8
+							},
+							"inputs": [
+								{
+									"referenceName": "RFS_SALES_CONTAINER",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": {
+											"value": "@variables('destination_container')",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "RFS_SALES_CONTAINER",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": {
+											"value": "@variables('temp_container')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "ExtractZipFiles",
+							"description": "Extract zip file into stldtemp container.\nSo each zip file from stldetl container will extract to stldtemp container.",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "SetFileName",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "BinarySource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"deleteFilesAfterCompletion": false
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings",
+										"compressionProperties": {
+											"type": "ZipDeflateReadSettings"
+										}
+									}
+								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings",
+										"copyBehavior": "PreserveHierarchy"
+									}
+								},
+								"enableStaging": false,
+								"dataIntegrationUnits": 8
+							},
+							"inputs": [
+								{
+									"referenceName": "RFS_SALES_SOURCE",
+									"type": "DatasetReference",
+									"parameters": {
+										"container_name": {
+											"value": "@variables('source_container')",
+											"type": "Expression"
+										},
+										"filename": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "RFS_SALES_CONTAINER",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": {
+											"value": "@variables('destination_container')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "ExecuteSalesXML",
+							"description": "This is inner activity inside foreach activity. which Executes RFS_SALES_PROCESS named child pipeline for each file.",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "GetSTLDXMLName",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "RFS_SALES_PROCESS",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"source_container": {
+										"value": "@variables('temp_container')",
+										"type": "Expression"
+									},
+									"file_name": {
+										"value": "@activity('GetSTLDXMLName').output.childItems[0].name",
+										"type": "Expression"
+									},
+									"stld_source_container": {
+										"value": "@variables('source_container')",
+										"type": "Expression"
+									},
+									"stld_filename": {
+										"value": "@item().name",
+										"type": "Expression"
+									},
+									"err_container": {
+										"value": "@variables('err_container')",
+										"type": "Expression"
+									},
+									"arc_container": {
+										"value": "@variables('arch_container')",
+										"type": "Expression"
+									},
+									"A": {
+										"value": "@variables('checksp')",
+										"type": "Expression"
+									},
+									"B": {
+										"value": "@variables('checkspp')",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "GetSTLDXMLName",
+							"description": "This activity use to get processed stld file and pass same file to child pipeline for next process.",
+							"type": "GetMetadata",
+							"dependsOn": [
+								{
+									"activity": "CopyPOSSTLDtoStaging",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "RFS_SALES_SOURCE",
+									"type": "DatasetReference",
+									"parameters": {
+										"container_name": {
+											"value": "@variables('temp_container')",
+											"type": "Expression"
+										},
+										"filename": {
+											"value": "@concat('data_',activity('CopyPOSSTLDtoStaging').ActivityRunId,'*')",
+											"type": "Expression"
+										}
+									}
+								},
+								"fieldList": [
+									"childItems",
+									"itemName"
+								],
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "BinaryReadSettings"
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "DeleteandMoveTemp",
+				"description": "Using this activity deleting all files from stldtemp and stldtemp2 containers.",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ProcessEachFile",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "RFS_SALES_DELETE_TEMP",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"temp1": {
+							"value": "@variables('destination_container')",
+							"type": "Expression"
+						},
+						"temp2": {
+							"value": "@variables('temp_container')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "CheckServerStatus",
+				"description": "This activity check server status to proceed ahead. If server status is online activity will succeed, if server is offline activity will Faile & throw an error message.",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SERVER_CHECK]"
+				},
+				"linkedServiceName": {
+					"referenceName": "BIIntegrationSQL_AzureIR",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@variables('dbname')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Truncate_Sales_Temp_Tables",
+				"description": "This activity runs [SP_TRUNCATE_ALL_SALES_TEMP_TABLES] Stored procedure.\nThis stored procedure going to truncates all sales staging table. ",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "CheckServerStatus",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SP_TRUNCATE_ALL_SALES_TEMP_TABLES]"
+				},
+				"linkedServiceName": {
+					"referenceName": "BIIntegrationSQL_AzureIR",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@variables('databasename')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "ExecuteNamesDB",
+				"description": "Executes RFS_NAMESDB pipeline.\nWhich process if namedb file exist in namedb container.",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "CheckServerStatus",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "RFS_NAMESDB",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "ExecuteProductDB",
+				"description": "Executes RFS_PRODUCTDB pipeline.\nWhich process if productdb file exist in productdb container.",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "CheckServerStatus",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "RFS_PRODUCTDB",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Executesalessp",
+				"description": "Executes [SP_Sales_Main] stored procedure.\nThis stored procedure includes \nSP_TRX_ItemQTY_Update\nSP_Update_TotalTax_Manualy\nstored procedure to update quantity and tax of sales main tables.",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "ProcessEachFile",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SP_Sales_Main]"
+				},
+				"linkedServiceName": {
+					"referenceName": "BIIntegrationSQL_AzureIR",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": "RFS_SALES_ETL"
+					}
+				}
+			}
+		],
+		"variables": {
+			"source_container": {
+				"type": "String",
+				"defaultValue": "stldetl"
+			},
+			"filename": {
+				"type": "String"
+			},
+			"destination_container": {
+				"type": "String",
+				"defaultValue": "stldtemp"
+			},
+			"temp_container": {
+				"type": "String",
+				"defaultValue": "stldtemp2"
+			},
+			"arch_container": {
+				"type": "String",
+				"defaultValue": "stldarch"
+			},
+			"err_container": {
+				"type": "String",
+				"defaultValue": "stlderr"
+			},
+			"businessdate": {
+				"type": "String"
+			},
+			"storeid": {
+				"type": "String"
+			},
+			"BusinessDateOnSuccess": {
+				"type": "String"
+			},
+			"StoreidOnSuccess": {
+				"type": "String"
+			},
+			"stldfilename": {
+				"type": "String"
+			},
+			"dbname": {
+				"type": "String",
+				"defaultValue": "RFS_SALES_ETL"
+			},
+			"databasename": {
+				"type": "String",
+				"defaultValue": "RFS_SALES_STAGING"
+			},
+			"checksp": {
+				"type": "String",
+				"defaultValue": "Success"
+			},
+			"checkspp": {
+				"type": "String",
+				"defaultValue": "Fail"
+			}
+		},
+		"folder": {
+			"name": "Master Pipelines"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-02-15T05:44:44Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

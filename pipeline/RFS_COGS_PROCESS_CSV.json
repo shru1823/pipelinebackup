@@ -1,0 +1,1643 @@
+{
+	"name": "RFS_COGS_PROCESS_CSV",
+	"properties": {
+		"activities": [
+			{
+				"name": "CopyDailySalesData",
+				"description": "Daily Sales csv data map to Daily Sales staging table in database.\nAll columns mapping is present in mapping section. \nSource data collected from the pipeline runs.",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Store",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "store_id",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "BusinessDay",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "business_day",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "PMixSales",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PMixSales",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 10,
+									"precision": 22
+								}
+							},
+							{
+								"source": {
+									"name": "DailyGSales",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "DailyGSales",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "RFS_COGS_CSV_SOURCE",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.temp_container",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().parameters.temp_folder",
+								"type": "Expression"
+							},
+							"file": {
+								"value": "@pipeline().parameters.dailysales_file",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbName": {
+								"value": "@pipeline().parameters.db_name",
+								"type": "Expression"
+							},
+							"tableName": "TEMP_DAILY_SALES"
+						}
+					}
+				]
+			},
+			{
+				"name": "CopyFoodPaperCostData",
+				"description": "Food Paper Cost csv data map to food Paper Cost staging table in database.\nAll columns mapping is present in mapping section. \nSource data collected from the pipeline runs.",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Store",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "store_id",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "MIC",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ItemCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Tag",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Business_Date",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Food",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Food_Cost",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 10,
+									"precision": 22
+								}
+							},
+							{
+								"source": {
+									"name": "PaperIn",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PaperIn",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 10,
+									"precision": 22
+								}
+							},
+							{
+								"source": {
+									"name": "PaperOut",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PaperOut",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 10,
+									"precision": 22
+								}
+							},
+							{
+								"source": {
+									"name": "TypeCode",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TypeCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": false,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "RFS_COGS_CSV_SOURCE",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.temp_container",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().parameters.temp_folder",
+								"type": "Expression"
+							},
+							"file": {
+								"value": "@pipeline().parameters.foodpaper_file",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbName": {
+								"value": "@pipeline().parameters.db_name",
+								"type": "Expression"
+							},
+							"tableName": "TEMP_FOODPAPER_COST"
+						}
+					}
+				]
+			},
+			{
+				"name": "CopyInventoryData",
+				"description": "Inventory Cost Control csv data map to Inventory Cost Control staging table in database.\nAll columns mapping is present in mapping section. \nSource data collected from the pipeline runs.",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Store",
+									"type": "String"
+								},
+								"sink": {
+									"name": "store_id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "BusinessDate",
+									"type": "String"
+								},
+								"sink": {
+									"name": "business_date",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ItemID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Item_Id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Food_name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RecipeContainedFlag",
+									"type": "String"
+								},
+								"sink": {
+									"name": "RecipeContainedFlag",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Group",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Group_name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "UOM",
+									"type": "String"
+								},
+								"sink": {
+									"name": "UOM",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "OpeningStock",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Opening_Stock",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "OpeningStockAmount",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Opening_Stock_Amount",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DeliveryCount",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Delivery_Count",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DeliveryAmount",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Delivery_Amount",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TransferInCount",
+									"type": "String"
+								},
+								"sink": {
+									"name": "TransferIn_Count",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TransferInAmt",
+									"type": "String"
+								},
+								"sink": {
+									"name": "TransferIn_Amt",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TransferOutCount",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Transfer_Out_Count",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TransferOutAmt",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Transfer_Out_Amt",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TransferAmount",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Transfer_Amount",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RProRWasQTY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "R_Pro_R_Was_QTY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RProRWasAmt",
+									"type": "String"
+								},
+								"sink": {
+									"name": "R_Pro_R_Was_Amt",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Usage_saleQTY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Usage_sale_QTY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Usage_saleAmt",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Usage_sale_Amt",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MDSSaleQTY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "MDS_Sale_QTY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "MDSSaleAmt",
+									"type": "String"
+								},
+								"sink": {
+									"name": "MDS_Sale_Amt",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ManagerMealQTY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ManagerMeal_QTY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ManagerMealAmt",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ManagerMeal_Amt",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "EmployeeMealQTY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Employee_Meal_QTY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "EmployeeMealAmt",
+									"type": "String"
+								},
+								"sink": {
+									"name": "EmployeeMeal_Amt",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PromoUsageQTY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PromoUsage_QTY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PromoUsageAmt",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PromoUsage_Amt",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "FullWasteQTY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "FullWaste_QTY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "FullWasteAmt",
+									"type": "String"
+								},
+								"sink": {
+									"name": "FullWaste_Amt",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ExpStock",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ExpStock",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "InventoryCountQTY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "InventoryCount_QTY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "InventoryCountAmt",
+									"type": "String"
+								},
+								"sink": {
+									"name": "InventoryCount_Amt",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "UsagePreQTY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Usage_Pre_QTY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "UsagePreAmt",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Usage_Pre_Amt",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "UsagePostQTY",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Usage_Post_QTY",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "UsagePostAmt",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Usage_Post_Amt",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PricePerCase",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PricePerCase",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "UnitsPerCase",
+									"type": "String"
+								},
+								"sink": {
+									"name": "UnitsPerCase",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "unitPrice",
+									"type": "String"
+								},
+								"sink": {
+									"name": "unitPrice",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "RFS_COGS_CSV_SOURCE",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.temp_container",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@pipeline().parameters.temp_folder",
+								"type": "Expression"
+							},
+							"file": {
+								"value": "@pipeline().parameters.inventory_file",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbName": {
+								"value": "@pipeline().parameters.db_name",
+								"type": "Expression"
+							},
+							"tableName": "TEMP_INVENTORY_CONTROL"
+						}
+					}
+				]
+			},
+			{
+				"name": "LogDailySalesOutput",
+				"description": "This activity maintains logs.\nAll details maintained in cogs pipeline logs table.\nColum's mapping is present in mapping section ",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "CopyDailySalesData",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "SELECT '@{pipeline().DataFactory}' as DataFactory_Name,\n'@{pipeline().Pipeline}' as Pipeline_Name,\n'@{pipeline().parameters.temp_folder}' as File_Name,\n'@{pipeline().parameters.dailysales_file}' as Process,\n'@{pipeline().TriggerType}' as TriggerType,\n'@{pipeline().TriggerId}' as TriggerId,\n'@{pipeline().TriggerName}' as TriggerName,\n'@{pipeline().TriggerTime}' as TriggerTime,\n'@{activity('CopyDailySalesData').output.rowsCopied}' as rowsCopied,\n'@{activity('CopyDailySalesData').output.rowsRead}' as RowsRead,\n'@{activity('CopyDailySalesData').output.usedParallelCopies}' as No_ParallelCopies,\n'@{activity('CopyDailySalesData').output.copyDuration}' as copyDuration_in_secs,\n'@{activity('CopyDailySalesData').output.effectiveIntegrationRuntime}' as effectiveIntegrationRuntime,\n'@{utcnow()}' as CopyActivity_End_Time,\n'@{activity('CopyDailySalesData').output.executionDetails[0].status}' as Status",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "DataFactory_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "DataFactory_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Pipeline_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Pipeline_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "File_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "FileName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Process",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Process",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerType",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerType",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerId",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerId",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerName",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerTime",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerTime",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "rowsCopied",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "rowsCopied",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "RowsRead",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "RowsRead",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "No_ParallelCopies",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "No_ParallelCopies",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "copyDuration_in_secs",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "copyDuration_in_secs",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "effectiveIntegrationRuntime",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "effectiveIntegrationRuntime",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Status",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Execution_Status",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CopyActivity_End_Time",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "CopyActivity_End_Time",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbName": {
+								"value": "@pipeline().parameters.db_name",
+								"type": "Expression"
+							},
+							"tableName": "temp"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbName": {
+								"value": "@variables('log_db')",
+								"type": "Expression"
+							},
+							"tableName": {
+								"value": "@variables('log_table')",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "LogFoodPaperCost",
+				"description": "This activity maintains logs.\nAll details maintained in cogs pipeline logs table.\nColum's mapping is present in mapping section ",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "CopyFoodPaperCostData",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "SELECT '@{pipeline().DataFactory}' as DataFactory_Name,\r\n'@{pipeline().Pipeline}' as Pipeline_Name,\r\n'@{pipeline().parameters.temp_folder}' as File_Name,\r\n'@{pipeline().parameters.foodpaper_file}' as Process,\r\n'@{pipeline().TriggerType}' as TriggerType,\r\n'@{pipeline().TriggerId}' as TriggerId,\r\n'@{pipeline().TriggerName}' as TriggerName,\r\n'@{pipeline().TriggerTime}' as TriggerTime,\r\n'@{activity('CopyFoodPaperCostData').output.rowsCopied}' as rowsCopied,\r\n'@{activity('CopyFoodPaperCostData').output.rowsRead}' as RowsRead,\r\n'@{activity('CopyFoodPaperCostData').output.usedParallelCopies}' as No_ParallelCopies,\r\n'@{activity('CopyFoodPaperCostData').output.copyDuration}' as copyDuration_in_secs,\r\n'@{activity('CopyFoodPaperCostData').output.effectiveIntegrationRuntime}' as effectiveIntegrationRuntime,\r\n'@{utcnow()}' as CopyActivity_End_Time,\r\n'@{activity('CopyFoodPaperCostData').output.executionDetails[0].status}' as Status",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "DataFactory_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "DataFactory_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Pipeline_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Pipeline_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "File_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "FileName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Process",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Process",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerType",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerType",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerId",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerId",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerName",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerTime",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerTime",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "rowsCopied",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "rowsCopied",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "RowsRead",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "RowsRead",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "No_ParallelCopies",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "No_ParallelCopies",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "copyDuration_in_secs",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "copyDuration_in_secs",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "effectiveIntegrationRuntime",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "effectiveIntegrationRuntime",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Status",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Execution_Status",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CopyActivity_End_Time",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "CopyActivity_End_Time",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbName": {
+								"value": "@pipeline().parameters.db_name",
+								"type": "Expression"
+							},
+							"tableName": "temp"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbName": {
+								"value": "@variables('log_db')",
+								"type": "Expression"
+							},
+							"tableName": {
+								"value": "@variables('log_table')",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "LogInventoryControl",
+				"description": "This activity maintains logs.\nAll details maintained in cogs pipeline logs table.\nColum's mapping is present in mapping section ",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "CopyInventoryData",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "SELECT '@{pipeline().DataFactory}' as DataFactory_Name,\r\n'@{pipeline().Pipeline}' as Pipeline_Name,\r\n'@{pipeline().parameters.temp_folder}' as File_Name,\r\n'@{pipeline().parameters.inventory_file}' as Process,\r\n'@{pipeline().TriggerType}' as TriggerType,\r\n'@{pipeline().TriggerId}' as TriggerId,\r\n'@{pipeline().TriggerName}' as TriggerName,\r\n'@{pipeline().TriggerTime}' as TriggerTime,\r\n'@{activity('CopyInventoryData').output.rowsCopied}' as rowsCopied,\r\n'@{activity('CopyInventoryData').output.rowsRead}' as RowsRead,\r\n'@{activity('CopyInventoryData').output.usedParallelCopies}' as No_ParallelCopies,\r\n'@{activity('CopyInventoryData').output.copyDuration}' as copyDuration_in_secs,\r\n'@{activity('CopyInventoryData').output.effectiveIntegrationRuntime}' as effectiveIntegrationRuntime,\r\n'@{utcnow()}' as CopyActivity_End_Time,\r\n'@{activity('CopyInventoryData').output.executionDetails[0].status}' as Status",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "DataFactory_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "DataFactory_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Pipeline_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Pipeline_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "File_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "FileName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Process",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Process",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerType",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerType",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerId",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerId",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerName",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerTime",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerTime",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "rowsCopied",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "rowsCopied",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "RowsRead",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "RowsRead",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "No_ParallelCopies",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "No_ParallelCopies",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "copyDuration_in_secs",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "copyDuration_in_secs",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "effectiveIntegrationRuntime",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "effectiveIntegrationRuntime",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Status",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Execution_Status",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CopyActivity_End_Time",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "CopyActivity_End_Time",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbName": {
+								"value": "@pipeline().parameters.db_name",
+								"type": "Expression"
+							},
+							"tableName": "temp"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbName": {
+								"value": "@variables('log_db')",
+								"type": "Expression"
+							},
+							"tableName": {
+								"value": "@variables('log_table')",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "RaiseErrorDailySales",
+				"description": "Use to throw an error if previous activity gets failed.",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "CopyDailySalesData",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "error_variable",
+					"value": {
+						"value": "@div(1, 0)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "RaiseErrorFoodPaperCost",
+				"description": "Use to throw an error if previous activity gets failed.",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "CopyFoodPaperCostData",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "error_variable",
+					"value": {
+						"value": "@div(1, 0)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "RaiseErrorInventoryControl",
+				"description": "Use to throw an error if previous activity gets failed.",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "CopyInventoryData",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "error_variable",
+					"value": {
+						"value": "@div(1, 0)",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"temp_container": {
+				"type": "string"
+			},
+			"temp_folder": {
+				"type": "string"
+			},
+			"dailysales_file": {
+				"type": "string"
+			},
+			"foodpaper_file": {
+				"type": "string"
+			},
+			"inventory_file": {
+				"type": "string"
+			},
+			"db_name": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"log_db": {
+				"type": "String",
+				"defaultValue": "RFS_PIPELINE_LOGS"
+			},
+			"log_table": {
+				"type": "String",
+				"defaultValue": "cogs_pipeline_log"
+			},
+			"error_variable": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "COGS Child Pipelines"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-02-07T09:28:44Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

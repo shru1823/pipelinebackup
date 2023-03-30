@@ -1,0 +1,22 @@
+{
+	"name": "BIIntegration_FileServer",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"parameters": {
+			"FolderName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "FileServer",
+		"typeProperties": {
+			"host": "@{concat('F:\\tempdata\\', linkedService().FolderName)}",
+			"userId": "biadmin@mcdjed.com",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJlNjJmYTQzZC1kMzhmLTQ1NTItOTU0OC1hZWQ0YmFiZjA5YjYiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "BIIntegration-SHIR",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

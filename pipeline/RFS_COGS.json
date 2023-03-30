@@ -1,0 +1,487 @@
+{
+	"name": "RFS_COGS",
+	"properties": {
+		"activities": [
+			{
+				"name": "ReadCOGSSource",
+				"description": "Using This activity, you will get total count of zip files are present at source location.\nTotal count will be output result of this activity & input for foreach activity.\n\n",
+				"type": "GetMetadata",
+				"dependsOn": [
+					{
+						"activity": "CheckServerStatus",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "RFS_COGS_SOURCE_FILE",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@variables('source_container')",
+								"type": "Expression"
+							},
+							"filename": {
+								"value": "@string('')",
+								"type": "Expression"
+							},
+							"folder": "@string('')"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "BinaryReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ProcessFiles",
+				"description": "This activity has multiple inner activity inside.\nNumber of Runs of this activity equal to total count of input files.\nIt will process each file parallelly. ",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "TruncateTempTables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('ReadCOGSSource').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "ExtractZIPFiles",
+							"description": "This activity use to extract zip files.\nAfter extraction Daily sales, Food paper cost & Inventory cost control these three csv files will generate in temp container(cogstemp).",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "RFS_COGS_EXTRACTZIP",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"source_container": {
+										"value": "@variables('source_container')",
+										"type": "Expression"
+									},
+									"temp_container": {
+										"value": "@variables('temp_container')",
+										"type": "Expression"
+									},
+									"source_file": {
+										"value": "@item().name",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "ProcessCSVFiles",
+							"description": "Process each csv file.\nDaily Sales files data map to Daily Sales table in database.\nsame process with Food Paper Cost and Inventory Cost Control.\nEach csv file data map to their respected database tables.",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "ExtractZIPFiles",
+									"dependencyConditions": [
+										"Succeeded",
+										"Failed"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "RFS_COGS_PROCESS_CSV",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"temp_container": {
+										"value": "@variables('temp_container')",
+										"type": "Expression"
+									},
+									"temp_folder": {
+										"value": "@item().name",
+										"type": "Expression"
+									},
+									"dailysales_file": {
+										"value": "@variables('DailySales_File')",
+										"type": "Expression"
+									},
+									"foodpaper_file": {
+										"value": "@variables('FoodPaper_File')",
+										"type": "Expression"
+									},
+									"inventory_file": {
+										"value": "@variables('Inventory_File')",
+										"type": "Expression"
+									},
+									"db_name": {
+										"value": "@variables('cogs_dbName')",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "MoveFilestoSuccess",
+							"description": "If previous all activity gets succussed move file to cogsarch container. ",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "ProcessCSVFiles",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "BinarySource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": false,
+										"deleteFilesAfterCompletion": true
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings"
+									}
+								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "RFS_COGS_SOURCE_ZIP",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": {
+											"value": "@variables('source_container')",
+											"type": "Expression"
+										},
+										"filename": {
+											"value": "@item().name",
+											"type": "Expression"
+										},
+										"folder": {
+											"value": "@string('')",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "RFS_COGS_CONTAINER",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": {
+											"value": "@variables('arch_container')",
+											"type": "Expression"
+										},
+										"folder": {
+											"value": "@string('')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "MoveFilestoFailure",
+							"description": "If  any previous activity gets failed then move file to cogserr container. ",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "ProcessCSVFiles",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "BinarySource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": false,
+										"deleteFilesAfterCompletion": true
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings"
+									}
+								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "RFS_COGS_SOURCE_ZIP",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": {
+											"value": "@variables('source_container')",
+											"type": "Expression"
+										},
+										"filename": {
+											"value": "@item().name",
+											"type": "Expression"
+										},
+										"folder": {
+											"value": "@string('')",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "RFS_COGS_CONTAINER",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": {
+											"value": "@variables('err_container')",
+											"type": "Expression"
+										},
+										"folder": {
+											"value": "@string('')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "DeleteTempFiles",
+				"description": "This activity performs deletion of all files from cogs temp container.",
+				"type": "Delete",
+				"dependsOn": [
+					{
+						"activity": "ExecuteCOGSScripts",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "RFS_COGS_CONTAINER",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@variables('temp_container')",
+								"type": "Expression"
+							},
+							"folder": {
+								"value": "@string('')",
+								"type": "Expression"
+							}
+						}
+					},
+					"enableLogging": false,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "TruncateTempTables",
+				"description": "Run [SP_TRUNCATE_TEMP_TABLES] stored procedure to truncate all COGS staging tables.",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "ReadCOGSSource",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SP_TRUNCATE_TEMP_TABLES]"
+				},
+				"linkedServiceName": {
+					"referenceName": "BIIntegrationSQL_AzureIR",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@variables('cogs_dbName')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "ExecuteCOGSScripts",
+				"description": "Execute [SP_COGS_ETL_POST] stored procedure.\nThis stored procedure has multiple store procedure inside.\nTo move staging tables data to their respected main tables.\n",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "ProcessFiles",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SP_COGS_ETL_POST]"
+				},
+				"linkedServiceName": {
+					"referenceName": "BIIntegrationSQL_AzureIR",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@variables('cogs_dbName')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "CheckServerStatus",
+				"description": "This activity check server status to proceed ahead. If server status is online activity will succeed, if server is offline activity will Faile & throw an error message.",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SERVER_CHECK]"
+				},
+				"linkedServiceName": {
+					"referenceName": "BIIntegrationSQL_AzureIR",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@variables('cogs_dbName')",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"variables": {
+			"source_container": {
+				"type": "String",
+				"defaultValue": "cogsetl"
+			},
+			"temp_container": {
+				"type": "String",
+				"defaultValue": "cogstemp"
+			},
+			"arch_container": {
+				"type": "String",
+				"defaultValue": "cogsarch"
+			},
+			"err_container": {
+				"type": "String",
+				"defaultValue": "cogserr"
+			},
+			"DailySales_File": {
+				"type": "String",
+				"defaultValue": "DailySales.csv"
+			},
+			"FoodPaper_File": {
+				"type": "String",
+				"defaultValue": "FoodPaperCost.csv"
+			},
+			"Inventory_File": {
+				"type": "String",
+				"defaultValue": "InventoryControl.csv"
+			},
+			"cogs_dbName": {
+				"type": "String",
+				"defaultValue": "RFS_COGS_ETL"
+			}
+		},
+		"folder": {
+			"name": "Master Pipelines"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-19T07:14:50Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

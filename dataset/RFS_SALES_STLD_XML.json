@@ -1,0 +1,38 @@
+{
+	"name": "RFS_SALES_STLD_XML",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RFS_BLOB_ETL",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"container": {
+				"type": "string",
+				"defaultValue": "sales"
+			},
+			"files": {
+				"type": "string",
+				"defaultValue": "POS_STLD_344_00060_20221105.20221106061001"
+			}
+		},
+		"folder": {
+			"name": "Sales Dataset"
+		},
+		"annotations": [],
+		"type": "Xml",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().files",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().container",
+					"type": "Expression"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

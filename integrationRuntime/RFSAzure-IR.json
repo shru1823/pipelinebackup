@@ -1,0 +1,18 @@
+{
+	"name": "RFSAzure-IR",
+	"properties": {
+		"type": "Managed",
+		"description": "Integration Runtime Setup for Accessing Resources Over Internet",
+		"typeProperties": {
+			"computeProperties": {
+				"location": "North Europe",
+				"dataFlowProperties": {
+					"computeType": "General",
+					"coreCount": 8,
+					"timeToLive": 0,
+					"cleanup": false
+				}
+			}
+		}
+	}
+}

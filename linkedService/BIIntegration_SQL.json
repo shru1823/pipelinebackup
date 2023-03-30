@@ -1,0 +1,22 @@
+{
+	"name": "BIIntegration_SQL",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "SQL Server 2019 Instance on BIIntegration Server",
+		"parameters": {
+			"link_ser_db_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=False;data source=BI-IntegrationV;initial catalog=@{linkedService().link_ser_db_name};user id=bi_int",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJjMThlM2QzZS02ZjFjLTQzODAtODFjYi00Zjg3NDJkN2FjYmQiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "BIIntegration-SHIR",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

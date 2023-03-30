@@ -1,0 +1,246 @@
+{
+	"name": "RFS_SALES_ADHOC_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "GETLISTOFXMLFILES",
+				"description": "Using This activity, you will get total count of xml files are present at source location.\nTotal count will be output result of this activity & input for foreach activity.\n\n",
+				"type": "GetMetadata",
+				"dependsOn": [
+					{
+						"activity": "Truncate_Sales_Temp_Tables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "RFS_SALES_SOURCE",
+						"type": "DatasetReference",
+						"parameters": {
+							"container_name": {
+								"value": "@variables('tempcontainer')",
+								"type": "Expression"
+							},
+							"filename": "*.xml"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "BinaryReadSettings"
+					}
+				}
+			},
+			{
+				"name": "PROCESSALLXMLFILES",
+				"description": "This activity has inner activity inside.\nNumber of Runs of this activity equal to total count of input files.\nIt will process each file parallelly. ",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "GETLISTOFXMLFILES",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GETLISTOFXMLFILES').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"batchCount": 10,
+					"activities": [
+						{
+							"name": "ExecuteXMLFile",
+							"description": "This is inner activity inside foreach activity. which Executes RFS_SALES_PROCESS named child pipeline for each file.",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "RFS_SALES_PROCESS_copy1",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"source_container": {
+										"value": "@variables('tempcontainer')",
+										"type": "Expression"
+									},
+									"file_name": {
+										"value": "@item().name",
+										"type": "Expression"
+									},
+									"stld_source_container": {
+										"value": "@variables('tempcontainer')",
+										"type": "Expression"
+									},
+									"stld_filename": {
+										"value": "@item().name",
+										"type": "Expression"
+									},
+									"err_container": {
+										"value": "@variables('errorcontainer')",
+										"type": "Expression"
+									},
+									"arc_container": {
+										"value": "@variables('successcontainer')",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Truncate_Sales_Temp_Tables",
+				"description": "This activity runs [SP_TRUNCATE_ALL_SALES_TEMP_TABLES] Stored procedure.\nThis stored procedure going to truncates all sales staging table. ",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "check server status",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SP_TRUNCATE_ALL_SALES_TEMP_TABLES]"
+				},
+				"linkedServiceName": {
+					"referenceName": "BIIntegrationSQL_AzureIR",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@variables('dbname')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Executesalessp",
+				"description": "Executes [SP_Sales_Main] stored procedure.\nThis stored procedure includes \nSP_TRX_ItemQTY_Update\nSP_Update_TotalTax_Manualy\nstored procedure to update quantity and tax of sales main tables.",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "PROCESSALLXMLFILES",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SP_Sales_Main]"
+				},
+				"linkedServiceName": {
+					"referenceName": "BIIntegrationSQL_AzureIR",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@variables('databasename')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "check server status",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SERVER_CHECK]"
+				},
+				"linkedServiceName": {
+					"referenceName": "BIIntegrationSQL_AzureIR",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@variables('databasename')",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"variables": {
+			"tempcontainer": {
+				"type": "String",
+				"defaultValue": "stldtemp2test"
+			},
+			"dbname": {
+				"type": "String",
+				"defaultValue": "RFS_SALES_STAGING_Test"
+			},
+			"successcontainer": {
+				"type": "String",
+				"defaultValue": "stldarchtest"
+			},
+			"errorcontainer": {
+				"type": "String",
+				"defaultValue": "stlderrtest"
+			},
+			"databasename": {
+				"type": "String",
+				"defaultValue": "RFS_SALES_ETL_Test"
+			},
+			"destinationcontainer": {
+				"type": "String",
+				"defaultValue": "stldtemptest"
+			},
+			"arch_container": {
+				"type": "String",
+				"defaultValue": "stldarchtest"
+			}
+		},
+		"folder": {
+			"name": "MASTER_TEST_PIPELINES"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-04T13:55:41Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

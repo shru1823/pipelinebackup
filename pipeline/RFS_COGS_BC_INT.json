@@ -1,0 +1,61 @@
+{
+	"name": "RFS_COGS_BC_INT",
+	"properties": {
+		"activities": [
+			{
+				"name": "RunIntegrationTask",
+				"description": "To run monthly integration to send data to Business Central",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SP00_SUMMARIZE_TOBC]",
+					"storedProcedureParameters": {
+						"MONTH": {
+							"value": {
+								"value": "@pipeline().parameters.Month",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"YEAR": {
+							"value": {
+								"value": "@pipeline().parameters.Year",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "BIIntegrationSQL_AzureIR",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": "RFS_COGS_ETL"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"Year": {
+				"type": "string"
+			},
+			"Month": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "Master Pipelines"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-19T13:56:21Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

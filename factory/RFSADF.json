@@ -1,0 +1,9 @@
+{
+	"name": "RFSADF",
+	"location": "northeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "a425de84-7c90-4429-9993-1869ce260016",
+		"tenantId": "cd94cab3-6d27-4df6-bfeb-02cea962dd9f"
+	}
+}

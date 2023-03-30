@@ -1,0 +1,22 @@
+{
+	"name": "OData1",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "OData",
+		"typeProperties": {
+			"url": "https://api.businesscentral.dynamics.com/v2.0/cd94cab3-6d27-4df6-bfeb-02cea962dd9f/Production/ODataV4/ETLIntegrationBusLogic_getdimensionlist?company=ba9f0aaa-b086-ed11-9989-000d3a6bf816",
+			"authenticationType": "Anonymous",
+			"authHeaders": {
+				"Authorization": {
+					"type": "SecureString",
+					"value": "**********"
+				}
+			}
+		},
+		"connectVia": {
+			"referenceName": "RFSAzure-IR",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

@@ -1,0 +1,1782 @@
+{
+	"name": "RFS_SALES_PROCESS",
+	"properties": {
+		"activities": [
+			{
+				"name": "ExecuteSalesDataflow_copy1",
+				"description": "At this point we are triggering RFS_SALES_DATAFLOW to run for process each xml file parallelly.\nSo XML to all sql staging tables mapping process done here.\n",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Copy_SP_Variables_Data",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "RFS_SALES_DATAFLOW",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"XMLSourceFile": {
+								"container": {
+									"value": "@pipeline().parameters.source_container",
+									"type": "Expression"
+								},
+								"files": {
+									"value": "@pipeline().parameters.file_name",
+									"type": "Expression"
+								}
+							},
+							"RecTLDProductionStatus": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TLD Production Status"
+							},
+							"RecNode": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$Node Status"
+							},
+							"RecEvent": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$Event"
+							},
+							"RecTRXInitGTotal": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_InitGTotal"
+							},
+							"RecTRXSetSMState": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_SetSMState"
+							},
+							"RecTRXBaseConfig": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_BaseConfig_Config"
+							},
+							"RecTRXBaseConfigposconfig": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_BaseConfig_POSConfig"
+							},
+							"RecTRXDayParts": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_DayParts"
+							},
+							"RecTrxTendertableTenderflag": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_TenderTable_TenderFlags"
+							},
+							"RecTRXTaxTabletype": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_TaxTable_Type"
+							},
+							"RecTRXDayOpen": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_DayOpen"
+							},
+							"TRXGetAuthorization": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_GetAuthorization"
+							},
+							"TRXOperLogin": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_OperLogin"
+							},
+							"RecEvDrawerclosee": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$Ev_DrawerClose"
+							},
+							"RecRXRegTransfers": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_RegTransfers"
+							},
+							"RECTRXsale": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale"
+							},
+							"SalesCustomInfoDetail": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$Sales Custom Info Detail"
+							},
+							"TRXOrderPromotions": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Order_Promotions"
+							},
+							"TRXOrderCustOffers": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Order_Cst_Offers"
+							},
+							"RecTRXReduction": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Reduction"
+							},
+							"EVSaleStart": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Event_Ev_SaleStart"
+							},
+							"EVSaleChoice": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Event_Ev_SaleChoice"
+							},
+							"EVChangeSizeSelection": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Event_Ev_ChangeSizeSe"
+							},
+							"EVSetsaleType": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Event_Ev_SetSaleType"
+							},
+							"EVSaleTotal": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Event_Ev_SaleTotal"
+							},
+							"EVAddTender": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Event_Ev_AddTender"
+							},
+							"RecTRXTenderTableType": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_TenderTable_Type"
+							},
+							"CustomInfo": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$Cashless POS"
+							},
+							"RecEVCustom": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_EV_Custom"
+							},
+							"RecTRXSaleOrder": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Order"
+							},
+							"EVSaleItem": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Event_Ev_SaleItem"
+							},
+							"SaleTenderMain": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Tenders"
+							},
+							"SalesTAXRefund": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Order(refund)"
+							},
+							"SalesCustomInfoRefund": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$Sales Custom Info Detail(Refund)"
+							},
+							"SaleTendersRefund": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Tenders(Refund)"
+							},
+							"EVSaleStartRefund": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Event_Ev_SaleStart(Refund)"
+							},
+							"EVSaleItemRefund": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Event_Ev_SaleItem(Refund)"
+							},
+							"EVSaleChoiceRefund": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Event_Ev_SaleChoice(Refund)"
+							},
+							"EvSetSaleTypeRefund": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Event_Ev_SetSaleType(Refund)"
+							},
+							"EVSaleTotalRefund": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Event_Ev_SaleTotal(Refund)"
+							},
+							"EVAddTenderRefund": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Event_Ev_AddTender(Refund)"
+							},
+							"EVSaleEndRefund": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Event_Ev_SaleEnd(Refund)"
+							},
+							"EVSaleEnd": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Event_Ev_SaleEnd"
+							},
+							"SaleItem1": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Item1"
+							},
+							"SaleItem2": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Item2"
+							},
+							"SaleItem3": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Item3"
+							},
+							"refund1final": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Item_Refund1"
+							},
+							"refund2final": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Item_Refund2"
+							},
+							"refund3check": {
+								"dbName": {
+									"value": "@variables('dbName')",
+									"type": "Expression"
+								},
+								"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale_Item_Refund3"
+							}
+						}
+					},
+					"integrationRuntime": {
+						"referenceName": "RFSAzure-IR",
+						"type": "IntegrationRuntimeReference"
+					},
+					"traceLevel": "None",
+					"runConcurrently": true
+				}
+			},
+			{
+				"name": "ExecuteSucessSPOnSuccess001",
+				"description": "Executes [SP001_EXECUTE_STLD_PROCESS] stored procedure.\nThis procedure use to insert records from sales staging tables to sales main tables with specific data transformations.\nThis procedure runs only when dataflow succussed and for that same file stored procedure will execute.",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "ExecuteProcedureSTLDprocess00",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SP001_EXECUTE_STLD_PROCESS]",
+					"storedProcedureParameters": {
+						"filename": {
+							"value": {
+								"value": "@pipeline().parameters.file_name",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "BIIntegrationSQL_AzureIR",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@variables('databasename')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "ExecuteSPOnFailure",
+				"description": "Executes [SP_ETL_LOAD_FAILURE] stored procedure.\nIf data flow fails at any point this procedure use to delete records of that particular file from sales staging tables",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "ExecuteProcedureSTLDprocess00",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SP_ETL_LOAD_FAILURE]",
+					"storedProcedureParameters": {
+						"filename": {
+							"value": {
+								"value": "@pipeline().parameters.file_name",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "BIIntegration_SQL",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"link_ser_db_name": {
+							"value": "@variables('dbName')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "MoveFiletoSuccess",
+				"description": "At this stage we are capturing succussed files. \nThose files moving to stldarch container using this activity.",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "ExecuteSucessSPOnSuccess001",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"deleteFilesAfterCompletion": true
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "RFS_SALES_SOURCE_ZIP",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.stld_source_container",
+								"type": "Expression"
+							},
+							"filename": {
+								"value": "@pipeline().parameters.stld_filename",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "RFS_SALES_CONTAINER",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.arc_container",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Copy_SP_Variables_Data",
+				"description": "Using this activity, we are capturing processed filename through variable with it's storeid and businessdate and mapping it to [temp_RFS_Run_Filesdata] named sql staging table.\nUsing this process we monitoring which file processed and for which business date and storeid.",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "check server status",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "XmlSource",
+						"additionalColumns": [
+							{
+								"name": "Filename",
+								"value": {
+									"value": "@string(pipeline().parameters.file_name)",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "XmlReadSettings",
+							"validationMode": "none",
+							"namespaces": true
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['TLD']['@businessDate']"
+								},
+								"sink": {
+									"name": "businessdate",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['TLD']['@storeId']"
+								},
+								"sink": {
+									"name": "storeid",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Filename']"
+								},
+								"sink": {
+									"name": "Run_File",
+									"type": "String"
+								}
+							}
+						],
+						"collectionReference": ""
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "RFS_SALES_STLD_XML",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.source_container",
+								"type": "Expression"
+							},
+							"files": {
+								"value": "@pipeline().parameters.file_name",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbName": {
+								"value": "@variables('dbName')",
+								"type": "Expression"
+							},
+							"tableName": "temp_RFS_Run_Filesdata"
+						}
+					}
+				]
+			},
+			{
+				"name": "MoveFiletoErrorOnSPFailure",
+				"description": "At this stage we are capturing error file who fails to execute previous activity.\nThose files moving to stlderr container using this activity.",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "ExecuteProcedureSTLDprocess00",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"deleteFilesAfterCompletion": true
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "RFS_SALES_SOURCE_ZIP",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.stld_source_container",
+								"type": "Expression"
+							},
+							"filename": {
+								"value": "@pipeline().parameters.stld_filename",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "RFS_SALES_CONTAINER",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.err_container",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "sales logs",
+				"description": "This activity maintains logs.\nAll details maintained in sales pipeline logs table.\nColum's mapping is present in mapping section ",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "MoveFiletoSuccess",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "SELECT '@{pipeline().DataFactory}' as DataFactory_Name,\n'@{pipeline().Pipeline}' as Pipeline_Name,\n'@{string(pipeline().parameters.file_name)}' as Process,\n'@{pipeline().parameters.stld_filename}'as File_Name,\n'@{pipeline().TriggerType}' as TriggerType,\n'@{pipeline().TriggerId}' as TriggerId,\n'@{pipeline().TriggerName}' as TriggerName,\n'@{pipeline().TriggerTime}' as TriggerTime,\n'@{utcnow()}' as CopyActivity_End_Time,\n'@{pipeline().parameters.A}' as status\n\n",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "DataFactory_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "DataFactory_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Pipeline_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Pipeline_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "File_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "FileName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Process",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Process",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerType",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerType",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerId",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerId",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerName",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerTime",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerTime",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "status",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Execution_Status",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CopyActivity_End_Time",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "CopyActivity_End_Time",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbName": "RFS_COGS_ETL",
+							"tableName": "TEMP"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbName": {
+								"value": "@variables('saleslogdb')",
+								"type": "Expression"
+							},
+							"tableName": {
+								"value": "@variables('logtablename')",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "check server status",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SERVER_CHECK]"
+				},
+				"linkedServiceName": {
+					"referenceName": "BIIntegrationSQL_AzureIR",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@variables('databasename')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "sales logs write",
+				"description": "This activity maintains logs.\nAll details maintained in sales pipeline logs table.\nColum's mapping is present in mapping section ",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "MoveFiletoErrorOnSPFailure",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "SELECT '@{pipeline().DataFactory}' as DataFactory_Name,\n'@{pipeline().Pipeline}' as Pipeline_Name,\n'@{string(pipeline().parameters.file_name)}' as Process,\n'@{pipeline().parameters.stld_filename}'as File_Name,\n'@{pipeline().TriggerType}' as TriggerType,\n'@{pipeline().TriggerId}' as TriggerId,\n'@{pipeline().TriggerName}' as TriggerName,\n'@{pipeline().TriggerTime}' as TriggerTime,\n'@{utcnow()}' as CopyActivity_End_Time,\n'@{pipeline().parameters.B}' as status\n\n",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "DataFactory_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "DataFactory_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Pipeline_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Pipeline_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "File_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "FileName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Process",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Process",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerType",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerType",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerId",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerId",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerName",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerTime",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerTime",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "status",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Execution_Status",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CopyActivity_End_Time",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "CopyActivity_End_Time",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbName": "RFS_COGS_ETL",
+							"tableName": "TEMP"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbName": {
+								"value": "@variables('saleslogdb')",
+								"type": "Expression"
+							},
+							"tableName": {
+								"value": "@variables('logtablename')",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "ExecuteProcedureSTLDprocess00",
+				"description": "[SP00_EXECUTE_STLD_PROCESS]",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "ExecuteSalesDataflow_copy1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SP00_EXECUTE_STLD_PROCESS]",
+					"storedProcedureParameters": {
+						"filename": {
+							"value": {
+								"value": "@pipeline().parameters.file_name",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "BIIntegrationSQL_AzureIR",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@variables('databasename')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "MoveFiletoErrorOnSPFailure_copy1",
+				"description": "At this stage we are capturing error file who fails to execute previous activity.\nThose files moving to stlderr container using this activity.",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "ExecuteSalesDataflow_copy1",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"deleteFilesAfterCompletion": true
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "RFS_SALES_SOURCE_ZIP",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.stld_source_container",
+								"type": "Expression"
+							},
+							"filename": {
+								"value": "@pipeline().parameters.stld_filename",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "RFS_SALES_CONTAINER",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.err_container",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "MoveFiletoErrorOnSPFailure_copy2",
+				"description": "At this stage we are capturing error file who fails to execute previous activity.\nThose files moving to stlderr container using this activity.",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "ExecuteSucessSPOnSuccess001",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"deleteFilesAfterCompletion": true
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "RFS_SALES_SOURCE_ZIP",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.stld_source_container",
+								"type": "Expression"
+							},
+							"filename": {
+								"value": "@pipeline().parameters.stld_filename",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "RFS_SALES_CONTAINER",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.err_container",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "sales logs write_copy1",
+				"description": "This activity maintains logs.\nAll details maintained in sales pipeline logs table.\nColum's mapping is present in mapping section ",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "MoveFiletoErrorOnSPFailure_copy1",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "SELECT '@{pipeline().DataFactory}' as DataFactory_Name,\n'@{pipeline().Pipeline}' as Pipeline_Name,\n'@{string(pipeline().parameters.file_name)}' as Process,\n'@{pipeline().parameters.stld_filename}'as File_Name,\n'@{pipeline().TriggerType}' as TriggerType,\n'@{pipeline().TriggerId}' as TriggerId,\n'@{pipeline().TriggerName}' as TriggerName,\n'@{pipeline().TriggerTime}' as TriggerTime,\n'@{utcnow()}' as CopyActivity_End_Time,\n'@{pipeline().parameters.B}' as status\n\n",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "DataFactory_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "DataFactory_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Pipeline_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Pipeline_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "File_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "FileName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Process",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Process",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerType",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerType",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerId",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerId",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerName",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerTime",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerTime",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "status",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Execution_Status",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CopyActivity_End_Time",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "CopyActivity_End_Time",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbName": "RFS_COGS_ETL",
+							"tableName": "TEMP"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbName": {
+								"value": "@variables('saleslogdb')",
+								"type": "Expression"
+							},
+							"tableName": {
+								"value": "@variables('logtablename')",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "sales logs write_copy2",
+				"description": "This activity maintains logs.\nAll details maintained in sales pipeline logs table.\nColum's mapping is present in mapping section ",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "MoveFiletoErrorOnSPFailure_copy2",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "SELECT '@{pipeline().DataFactory}' as DataFactory_Name,\n'@{pipeline().Pipeline}' as Pipeline_Name,\n'@{string(pipeline().parameters.file_name)}' as Process,\n'@{pipeline().parameters.stld_filename}'as File_Name,\n'@{pipeline().TriggerType}' as TriggerType,\n'@{pipeline().TriggerId}' as TriggerId,\n'@{pipeline().TriggerName}' as TriggerName,\n'@{pipeline().TriggerTime}' as TriggerTime,\n'@{utcnow()}' as CopyActivity_End_Time,\n'@{pipeline().parameters.B}' as status\n\n",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "DataFactory_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "DataFactory_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Pipeline_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Pipeline_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "File_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "FileName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Process",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Process",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerType",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerType",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerId",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerId",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerName",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TriggerTime",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TriggerTime",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "status",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Execution_Status",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CopyActivity_End_Time",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "CopyActivity_End_Time",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbName": "RFS_COGS_ETL",
+							"tableName": "TEMP"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbName": {
+								"value": "@variables('saleslogdb')",
+								"type": "Expression"
+							},
+							"tableName": {
+								"value": "@variables('logtablename')",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"source_container": {
+				"type": "string"
+			},
+			"file_name": {
+				"type": "string"
+			},
+			"stld_source_container": {
+				"type": "string"
+			},
+			"stld_filename": {
+				"type": "string"
+			},
+			"err_container": {
+				"type": "string"
+			},
+			"arc_container": {
+				"type": "string"
+			},
+			"A": {
+				"type": "string"
+			},
+			"B": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"dbName": {
+				"type": "String",
+				"defaultValue": "RFS_SALES_STAGING"
+			},
+			"BusinessDateOnSuccess": {
+				"type": "String"
+			},
+			"StoreidOnSuccess": {
+				"type": "String"
+			},
+			"BusinessDateOnFailure": {
+				"type": "String"
+			},
+			"StoreidOnFailure": {
+				"type": "String"
+			},
+			"setbusinessdate": {
+				"type": "Array"
+			},
+			"saleslogdb": {
+				"type": "String",
+				"defaultValue": "RFS_PIPELINE_LOGS"
+			},
+			"logtablename": {
+				"type": "String",
+				"defaultValue": "sales_pipeline_log"
+			},
+			"databasename": {
+				"type": "String",
+				"defaultValue": "RFS_SALES_ETL"
+			},
+			"check": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "SALES Child Pipelines"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-03-17T11:13:22Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

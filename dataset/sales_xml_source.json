@@ -1,0 +1,22 @@
+{
+	"name": "sales_xml_source",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RFS_BLOB_ETL",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Sales Dataset"
+		},
+		"annotations": [],
+		"type": "Xml",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "POS_STLD_344_00110_20220222.20220223061003.xml",
+				"container": "sales"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
