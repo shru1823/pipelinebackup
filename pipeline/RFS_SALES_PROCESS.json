@@ -834,6 +834,10 @@
 							"dbName": {
 								"value": "@variables('databasename')",
 								"type": "Expression"
+							},
+							"tableName": {
+								"value": "@string('')",
+								"type": "Expression"
 							}
 						}
 					},
