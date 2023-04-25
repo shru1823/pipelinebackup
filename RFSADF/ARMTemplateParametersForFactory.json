@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "RFSADF"
+		},
+		"BIIntegrationSQL_AzureIR_connectionString": {
+			"value": ""
+		},
+		"BIIntegration_FileServer_password": {
+			"value": ""
+		},
+		"BIIntegration_SQL_connectionString": {
+			"value": ""
+		},
+		"RFS_BLOB_ETL_connectionString": {
+			"value": ""
+		},
+		"BIIntegration_FileServer_properties_typeProperties_host": {
+			"value": "@{concat('F:\\tempdata\\', linkedService().FolderName)}"
+		},
+		"BIIntegration_FileServer_properties_typeProperties_userId": {
+			"value": "biadmin@mcdjed.com"
+		},
+		"OData1_properties_typeProperties_url": {
+			"value": "https://api.businesscentral.dynamics.com/v2.0/cd94cab3-6d27-4df6-bfeb-02cea962dd9f/Production/ODataV4/ETLIntegrationBusLogic_getdimensionlist?company=ba9f0aaa-b086-ed11-9989-000d3a6bf816"
+		},
+		"RestService1_properties_typeProperties_url": {
+			"value": "https://api.businesscentral.dynamics.com/myapi?$format=application/json;odata.metadata=none"
+		}
+	}
+}

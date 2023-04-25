@@ -1,0 +1,138 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "RFSADF"
+		},
+		"BIIntegrationSQL_AzureIR_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'BIIntegrationSQL_AzureIR'"
+		},
+		"BIIntegration_FileServer_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'BIIntegration_FileServer'"
+		},
+		"BIIntegration_SQL_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'BIIntegration_SQL'"
+		},
+		"RFS_BLOB_ETL_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'RFS_BLOB_ETL'"
+		},
+		"BIIntegration_FileServer_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "@{concat('F:\\tempdata\\', linkedService().FolderName)}"
+		},
+		"BIIntegration_FileServer_properties_typeProperties_userId": {
+			"type": "string",
+			"defaultValue": "biadmin@mcdjed.com"
+		},
+		"OData1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://api.businesscentral.dynamics.com/v2.0/cd94cab3-6d27-4df6-bfeb-02cea962dd9f/Production/ODataV4/ETLIntegrationBusLogic_getdimensionlist?company=ba9f0aaa-b086-ed11-9989-000d3a6bf816"
+		},
+		"RestService1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://api.businesscentral.dynamics.com/myapi?$format=application/json;odata.metadata=none"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "RFSADF_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"BIIntegrationSQL_AzureIR_connectionString": {
+						"value": "[parameters('BIIntegrationSQL_AzureIR_connectionString')]"
+					},
+					"BIIntegration_FileServer_password": {
+						"value": "[parameters('BIIntegration_FileServer_password')]"
+					},
+					"BIIntegration_SQL_connectionString": {
+						"value": "[parameters('BIIntegration_SQL_connectionString')]"
+					},
+					"RFS_BLOB_ETL_connectionString": {
+						"value": "[parameters('RFS_BLOB_ETL_connectionString')]"
+					},
+					"BIIntegration_FileServer_properties_typeProperties_host": {
+						"value": "[parameters('BIIntegration_FileServer_properties_typeProperties_host')]"
+					},
+					"BIIntegration_FileServer_properties_typeProperties_userId": {
+						"value": "[parameters('BIIntegration_FileServer_properties_typeProperties_userId')]"
+					},
+					"OData1_properties_typeProperties_url": {
+						"value": "[parameters('OData1_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "RFSADF_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"RestService1_properties_typeProperties_url": {
+						"value": "[parameters('RestService1_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'RFSADF_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "RFSADF_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'RFSADF_ArmTemplate_1')]"
+			]
+		}
+	]
+}
