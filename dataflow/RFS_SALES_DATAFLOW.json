@@ -123,13 +123,6 @@
 						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
 						"type": "DatasetReference"
 					},
-					"name": "RECTRXsale"
-				},
-				{
-					"dataset": {
-						"referenceName": "RFS_DATAWAREHOUSE_AzIR",
-						"type": "DatasetReference"
-					},
 					"name": "SalesCustomInfoDetail"
 				},
 				{
@@ -597,9 +590,6 @@
 				},
 				{
 					"name": "filter25"
-				},
-				{
-					"name": "filter26"
 				},
 				{
 					"name": "filter27"
@@ -2065,7 +2055,6 @@
 				"FlattenEVChangeSizeSelection filter(equals({@Type}, 'TRX_Sale')) ~> filter23",
 				"FlattenEVSaleChoice2 filter(equals(type, 'TRX_Sale')) ~> filter24",
 				"FlattenEVSaleStart2 filter(equals(type, 'TRX_Sale')) ~> filter25",
-				"FlattenSalesCustomInfoDetail1 filter(equals({@Type}, 'TRX_Sale')) ~> filter26",
 				"FlattenSalesCustomInfoDetail2 filter(equals({@Type}, 'TRX_Sale')) ~> filter27",
 				"FlattenSalesCustomInfoDetail1 filter(equals({@Type}, 'TRX_Sale')) ~> filter28",
 				"XMLSourceFile sink(allowSchemaDrift: true,",
@@ -2366,52 +2355,6 @@
 				"          {RecRXRegTransfers.TenderName} = {@TenderName},",
 				"          {RecRXRegTransfers.TransferType} = {@TransferType}",
 				"     )) ~> RecRXRegTransfers",
-				"filter26 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     deletable:false,",
-				"     insertable:true,",
-				"     updateable:false,",
-				"     upsertable:false,",
-				"     format: 'table',",
-				"     mapColumn(",
-				"          POS,",
-				"          RECTRXsalebusinessDate = {@businessDate},",
-				"          RECTRXsalestoreId = {@storeId},",
-				"          RECTRXsaleEventTime = {@Time},",
-				"          RECTRXsaleRegId = {@RegId},",
-				"          RECTRXsaleEventType = {@Type},",
-				"          RECTRXsalePOD = {@POD},",
-				"          RECTRXsalestatus = {@status},",
-				"          EndsaleTime,",
-				"          RECTRXsaleendSaleDate = {@endSaleDate},",
-				"          RECTRXsalestartSaleTime = {@startSaleTime},",
-				"          RECTRXsalestartSaleDate = {@startSaleDate},",
-				"          RECTRXsaleorderSrc = {@orderSrc},",
-				"          nonProductTax = {@nonProductTax},",
-				"          totalTax = {@totalTax},",
-				"          nonProductAmount = {@nonProductAmount},",
-				"          totalAmount = {@totalAmount},",
-				"          saleType = {@saleType},",
-				"          booth = {@booth},",
-				"          receiptNumber = {@receiptNumber},",
-				"          side = {@side},",
-				"          minor = {@minor},",
-				"          major = {@major},",
-				"          key = {@key},",
-				"          kind = {@kind},",
-				"          uniqueId = {@uniqueId},",
-				"          Timestamp = {@Timestamp},",
-				"          foreignOrderId = {@foreignOrderId},",
-				"          untilStore = {@untilStore},",
-				"          untilTotal = {@untilTotal},",
-				"          untilPay = {@untilPay},",
-				"          itemsCount = {@itemsCount},",
-				"          TaxChainId,",
-				"          amount = {@amount},",
-				"          name = {@name},",
-				"          baseAmount = {@baseAmount},",
-				"          rate = {@rate}",
-				"     )) ~> RECTRXsale",
 				"filter27 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
