@@ -321,84 +321,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/RFS_COGS_BC_INT_copy1')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "RunIntegrationTask",
-						"description": "To run monthly integration to send data to Business Central",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[SP00_SUMMARIZE_TOBC]",
-							"storedProcedureParameters": {
-								"MONTH": {
-									"value": {
-										"value": "@pipeline().parameters.Month",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"YEAR": {
-									"value": {
-										"value": "@pipeline().parameters.Year",
-										"type": "Expression"
-									},
-									"type": "String"
-								}
-							}
-						},
-						"linkedServiceName": {
-							"referenceName": "BIIntegrationSQL_AzureIR",
-							"type": "LinkedServiceReference",
-							"parameters": {
-								"DBName": {
-									"value": "@variables('dbname')",
-									"type": "Expression"
-								}
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"parameters": {
-					"Year": {
-						"type": "string"
-					},
-					"Month": {
-						"type": "string"
-					}
-				},
-				"variables": {
-					"dbname": {
-						"type": "String",
-						"defaultValue": "RFS_COGS_ETL_Test"
-					}
-				},
-				"folder": {
-					"name": "MASTER_TEST_PIPELINES"
-				},
-				"annotations": [],
-				"lastPublishTime": "2023-01-02T06:33:23Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BIIntegrationSQL_AzureIR')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/RFS_COGS_CONTAINER')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -735,6 +657,50 @@
 							"value": "@dataset().container",
 							"type": "Expression"
 						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/RFS_BLOB_ETL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RFS_SALES_SOURCE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RFS_BLOB_ETL",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"container_name": {
+						"type": "string"
+					},
+					"filename": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Sales Dataset"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().filename",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().container_name",
+							"type": "Expression"
+						}
+					},
+					"compression": {
+						"type": "ZipDeflate",
+						"level": "Fastest"
 					}
 				}
 			},
