@@ -2443,6 +2443,12 @@
 								]
 							}
 						],
+						"policy": {
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "error_variable",
@@ -2464,6 +2470,12 @@
 								]
 							}
 						],
+						"policy": {
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "error_variable",
@@ -2485,6 +2497,12 @@
 								]
 							}
 						],
+						"policy": {
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "error_variable",
@@ -4095,6 +4113,12 @@
 								]
 							}
 						],
+						"policy": {
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "error_variable",
@@ -4116,6 +4140,12 @@
 								]
 							}
 						],
+						"policy": {
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "error_variable",
@@ -4137,6 +4167,12 @@
 								]
 							}
 						],
+						"policy": {
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
 						"userProperties": [],
 						"typeProperties": {
 							"variableName": "error_variable",
@@ -5834,6 +5870,12 @@
 									"description": "This activity will set file name variable value as a processed item name.\n",
 									"type": "SetVariable",
 									"dependsOn": [],
+									"policy": {
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
 									"userProperties": [],
 									"typeProperties": {
 										"variableName": "filename",
@@ -7210,13 +7252,6 @@
 											"type": "Expression"
 										},
 										"tableName": "temp_Reza Food Services Co_ Ltd$TRX_RegTransfers"
-									},
-									"RECTRXsale": {
-										"dbName": {
-											"value": "@variables('dbName')",
-											"type": "Expression"
-										},
-										"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale"
 									},
 									"SalesCustomInfoDetail": {
 										"dbName": {
@@ -9010,13 +9045,6 @@
 										},
 										"tableName": "temp_Reza Food Services Co_ Ltd$TRX_RegTransfers"
 									},
-									"RECTRXsale": {
-										"dbName": {
-											"value": "@variables('dbName')",
-											"type": "Expression"
-										},
-										"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale"
-									},
 									"SalesCustomInfoDetail": {
 										"dbName": {
 											"value": "@variables('dbName')",
@@ -10472,6 +10500,12 @@
 									"description": "This activity will set file name variable value as a processed item name.\n",
 									"type": "SetVariable",
 									"dependsOn": [],
+									"policy": {
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
 									"userProperties": [],
 									"typeProperties": {
 										"variableName": "filename",
@@ -11044,6 +11078,12 @@
 									"description": "This activity will set file name variable value as a processed item name.\n",
 									"type": "SetVariable",
 									"dependsOn": [],
+									"policy": {
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
 									"userProperties": [],
 									"typeProperties": {
 										"variableName": "filename",
@@ -11665,13 +11705,6 @@
 											"type": "Expression"
 										},
 										"tableName": "temp_Reza Food Services Co_ Ltd$TRX_RegTransfers"
-									},
-									"RECTRXsale": {
-										"dbName": {
-											"value": "@variables('dbName')",
-											"type": "Expression"
-										},
-										"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale"
 									},
 									"SalesCustomInfoDetail": {
 										"dbName": {
@@ -15687,13 +15720,6 @@
 								"referenceName": "RFS_DATAWAREHOUSE_AzIR",
 								"type": "DatasetReference"
 							},
-							"name": "RECTRXsale"
-						},
-						{
-							"dataset": {
-								"referenceName": "RFS_DATAWAREHOUSE_AzIR",
-								"type": "DatasetReference"
-							},
 							"name": "SalesCustomInfoDetail"
 						},
 						{
@@ -16161,9 +16187,6 @@
 						},
 						{
 							"name": "filter25"
-						},
-						{
-							"name": "filter26"
 						},
 						{
 							"name": "filter27"
@@ -17629,7 +17652,6 @@
 						"FlattenEVChangeSizeSelection filter(equals({@Type}, 'TRX_Sale')) ~> filter23",
 						"FlattenEVSaleChoice2 filter(equals(type, 'TRX_Sale')) ~> filter24",
 						"FlattenEVSaleStart2 filter(equals(type, 'TRX_Sale')) ~> filter25",
-						"FlattenSalesCustomInfoDetail1 filter(equals({@Type}, 'TRX_Sale')) ~> filter26",
 						"FlattenSalesCustomInfoDetail2 filter(equals({@Type}, 'TRX_Sale')) ~> filter27",
 						"FlattenSalesCustomInfoDetail1 filter(equals({@Type}, 'TRX_Sale')) ~> filter28",
 						"XMLSourceFile sink(allowSchemaDrift: true,",
@@ -17930,52 +17952,6 @@
 						"          {RecRXRegTransfers.TenderName} = {@TenderName},",
 						"          {RecRXRegTransfers.TransferType} = {@TransferType}",
 						"     )) ~> RecRXRegTransfers",
-						"filter26 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     format: 'table',",
-						"     mapColumn(",
-						"          POS,",
-						"          RECTRXsalebusinessDate = {@businessDate},",
-						"          RECTRXsalestoreId = {@storeId},",
-						"          RECTRXsaleEventTime = {@Time},",
-						"          RECTRXsaleRegId = {@RegId},",
-						"          RECTRXsaleEventType = {@Type},",
-						"          RECTRXsalePOD = {@POD},",
-						"          RECTRXsalestatus = {@status},",
-						"          EndsaleTime,",
-						"          RECTRXsaleendSaleDate = {@endSaleDate},",
-						"          RECTRXsalestartSaleTime = {@startSaleTime},",
-						"          RECTRXsalestartSaleDate = {@startSaleDate},",
-						"          RECTRXsaleorderSrc = {@orderSrc},",
-						"          nonProductTax = {@nonProductTax},",
-						"          totalTax = {@totalTax},",
-						"          nonProductAmount = {@nonProductAmount},",
-						"          totalAmount = {@totalAmount},",
-						"          saleType = {@saleType},",
-						"          booth = {@booth},",
-						"          receiptNumber = {@receiptNumber},",
-						"          side = {@side},",
-						"          minor = {@minor},",
-						"          major = {@major},",
-						"          key = {@key},",
-						"          kind = {@kind},",
-						"          uniqueId = {@uniqueId},",
-						"          Timestamp = {@Timestamp},",
-						"          foreignOrderId = {@foreignOrderId},",
-						"          untilStore = {@untilStore},",
-						"          untilTotal = {@untilTotal},",
-						"          untilPay = {@untilPay},",
-						"          itemsCount = {@itemsCount},",
-						"          TaxChainId,",
-						"          amount = {@amount},",
-						"          name = {@name},",
-						"          baseAmount = {@baseAmount},",
-						"          rate = {@rate}",
-						"     )) ~> RECTRXsale",
 						"filter27 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     deletable:false,",

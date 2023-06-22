@@ -2181,13 +2181,6 @@
 										},
 										"tableName": "temp_Reza Food Services Co_ Ltd$TRX_RegTransfers"
 									},
-									"RECTRXsale": {
-										"dbName": {
-											"value": "@variables('dbName')",
-											"type": "Expression"
-										},
-										"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale"
-									},
 									"SalesCustomInfoDetail": {
 										"dbName": {
 											"value": "@variables('dbName')",
@@ -3971,13 +3964,6 @@
 										},
 										"tableName": "temp_Reza Food Services Co_ Ltd$TRX_RegTransfers"
 									},
-									"RECTRXsale": {
-										"dbName": {
-											"value": "@variables('dbName')",
-											"type": "Expression"
-										},
-										"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale"
-									},
 									"SalesCustomInfoDetail": {
 										"dbName": {
 											"value": "@variables('dbName')",
@@ -5491,13 +5477,6 @@
 										},
 										"tableName": "temp_Reza Food Services Co_ Ltd$TRX_RegTransfers"
 									},
-									"RECTRXsale": {
-										"dbName": {
-											"value": "@variables('dbName')",
-											"type": "Expression"
-										},
-										"tableName": "temp_Reza Food Services Co_ Ltd$TRX_Sale"
-									},
 									"SalesCustomInfoDetail": {
 										"dbName": {
 											"value": "@variables('dbName')",
@@ -6861,6 +6840,12 @@
 									"description": "This activity will set file name variable value as a processed item name.\n",
 									"type": "SetVariable",
 									"dependsOn": [],
+									"policy": {
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
 									"userProperties": [],
 									"typeProperties": {
 										"variableName": "filename",
@@ -7965,6 +7950,12 @@
 									"description": "This activity will set file name variable value as a processed item name.\n",
 									"type": "SetVariable",
 									"dependsOn": [],
+									"policy": {
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
 									"userProperties": [],
 									"typeProperties": {
 										"variableName": "filename",
@@ -8533,6 +8524,12 @@
 									"description": "This activity will set file name variable value as a processed item name.\n",
 									"type": "SetVariable",
 									"dependsOn": [],
+									"policy": {
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
 									"userProperties": [],
 									"typeProperties": {
 										"variableName": "filename",
